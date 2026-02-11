@@ -1,9 +1,9 @@
 const express = require('express');
-const fs = require('fs'); 
+const tourController = require('./../Controllers/tourControllers');
+const authController = require('./../Controllers/authController');
 
 const Router = express.Router();
 
-const tourController = require('./../Controllers/tourControllers');
 
 //Router.param('id',tourController.checkId);
 
@@ -13,7 +13,7 @@ Router.route('/tour-stats').get(tourController.getTourStats);
 
 Router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan);
 
-Router.route('/').get(tourController.getTours).post(tourController.postTours);
+Router.route('/').get(authController.protect,tourController.getTours).post(tourController.postTours);
 
 Router.route('/:id').patch(tourController.patchTours).delete(tourController.deleteTours);
 

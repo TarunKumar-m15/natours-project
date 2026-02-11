@@ -1,9 +1,7 @@
-const fs = require('fs');
 const Tour = require('./../models/tourModel');
-const { json } = require('stream/consumers');
 const APIFeatures = require('./../utils/apiFeatures')
-
 const catchAsync = require('./../utils/catchAsync')
+const { json } = require('stream/consumers');
 
 
 exports.aliasTopTours = (req, res, next) => {
@@ -23,13 +21,6 @@ exports.getTours = catchAsync(async (req, res,next) => {
        .limitFields()
       //.paginate();
     const tours = await features.query;
-
-    // const tours = await Tour.find({
-    //   duration:5,
-    //   difficulty:'easy'
-    // });
-
-    // const tours = await Tour.find().where('duration').equals(5).where('difficulty').equals('easy');
 
     // SEND RESPONSE
     res.status(200).json({

@@ -37,7 +37,7 @@ app.use(express.json());
 //For any request starting with /api/v1/tours, send it to tourRouter
 
 app.use('/api/v1/tours',tourRouter);
-app.use('/api/v1/tours',userRouter);
+app.use('/api/v1/users',userRouter);
 
 app.all('*',(req,res,next)=>{
   next(new AppError(`can't find ${req.originalUrl} on this server!`));

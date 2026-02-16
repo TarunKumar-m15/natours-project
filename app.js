@@ -24,14 +24,9 @@ if(process.env.NODE_ENV === 'development'){
 
 
 app.use((req, res, next) => {
-  console.log('middleware 2..');
   req.requestTime = new Date().toISOString();
   next();
 });
-
-
-
-app.use(express.json());
 
 
 //For any request starting with /api/v1/tours, send it to tourRouter

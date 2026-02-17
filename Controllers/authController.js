@@ -7,7 +7,18 @@ const AppError = require('./../utils/appError');
 const sendEmail = require('./../utils/email');
 
 const createSendToken = (user,statusCode,res) => {
-    const token = signToken(user._id)
+    const token = signToken(user._id);
+
+    const cookieOptions = {
+        expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRESIN * 24 * 60 * 60 * 1000),
+        httpOnly:true
+    }
+
+    if(process.env.NODE_ENV === 'development') cookieOptions.secure = true;
+    res.cookie('jwt',cookieOptions);
+
+    user.password = undefined;
+
      res.status(statusCode).json({
         status: 'success',
         token,
@@ -46,9 +57,20 @@ exports.login = catchAsync(async (req, res, next) => {
     //check if user exist and password correct
     const user = await User.findOne({ email }).select('+password');
 
-    if (!user || !(await user.correctPassword(password, user.password))) {
-        return next(new AppError('Incorrect password or email', 401))
+    //check if account is locked 
+    if(user.lockUntil && user.lockUntil > Date.now()){
+        return next(new AppError('Account locked due to Too many attempts. please try again later',403))
     }
+
+    //check for correct password
+    const correct = await user.correctPassword(password,user.password);
+    if(!correct){
+        await user.incrementLoginAttempts();
+        return next(new AppError('Incorrect email or password',401))
+    }
+
+    //successful login  reset attempts
+    await user.resetLoginAttempts();
 
     //if all ok send success response with token
     createSendToken(user,200,res);

@@ -52,7 +52,7 @@ exports.getUsers = async (req, res) => {
         results: tours.length,
         data: {
             tours,
-        },
+        }
     });
 };
 

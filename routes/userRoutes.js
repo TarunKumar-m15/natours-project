@@ -5,21 +5,30 @@ const authController = require('./../Controllers/authController');
 
 const Router = express.Router();
 
+
 Router.post('/signup',authController.signup);
 Router.post('/login',authController.login);
-
 Router.post('/forgotPassword',authController.forgotPassword);
 Router.patch('/resetPassword/:token',authController.resetPassword);
 
-Router.patch('/updateMyPassword',authController.protect,authController.updatePassword);
+Router.use(authController.protect);
 
-Router.patch('/updateMe',authController.protect,userController.updateMe);
+Router.get('/me',userController.getMe,userController.getOneUser);
 
-Router.delete('/deleteMe',authController.protect,userController.deleteMe);
+Router.patch('/updateMyPassword',authController.updatePassword);
 
-Router.route('/').get(userController.getUsers).post(userController.postUsers);
+Router.patch('/updateMe',userController.updateMe);
 
-Router.route('/:id').patch(userController.patchUsers).delete(userController.deleteUsers);
+Router.delete('/deleteMe',userController.deleteMe);
+
+
+
+Router.route('/').get(authController.restrictTo('admin'),userController.getUsers).post(userController.postUsers);
+
+
+Router.route('/:id').patch(authController.restrictTo('admin'),userController.patchUsers)
+      .delete(authController.restrictTo('admin'),userController.deleteUsers)
+      .get(userController.getOneUser);
 
 
 module.exports = Router;

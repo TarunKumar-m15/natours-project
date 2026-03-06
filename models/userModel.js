@@ -70,13 +70,14 @@ userSchema.virtual('isLocked').get(function () {
 
 userSchema.pre('save', async function () {
     // it runs only if password was created or modified
-    if (!this.isModified('password')) return;
+    if (!this.isModified('password')) return ;
 
     //hash the password with cost of 12
-    this.password = bcrypt.hash(this.password, 12);
+    this.password =await bcrypt.hash(this.password, 12);
 
     //delete the passwordConfirm
     this.passwordConfirm = undefined;
+
 });
 
 userSchema.pre('save', function () {
